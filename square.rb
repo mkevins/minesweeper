@@ -1,6 +1,9 @@
+require_relative 'board'
+
 class Square
 
-  attr_accessor :value, :position, :flag, :revealed, :neighbors
+  attr_accessor :value, :position, :flag, :revealed
+  attr_reader :neighbors
 
   def initialize(position, options = {})
     defaults = {
@@ -17,8 +20,13 @@ class Square
     @neighbors = []
   end
 
-  def set_neighbors
-
-
+  def inspect
+    puts "position: #{@position}"
+    puts "value #{@value}"
+    puts "flag #{@flag}"
+    puts "revealed #{@revealed}"
+    puts "neighbor length #{@neighbors.length}"
   end
+
+
 end
