@@ -16,7 +16,9 @@ class Minesweeper
   def play
 
     until self.game.over?
-      pos, move = prompt
+      moves = prompt
+      next if moves.nil?
+      pos, move = moves
 
       if move == "R"
         self.game[pos].reveal
@@ -38,18 +40,38 @@ class Minesweeper
   def prompt
     display
     puts "What is your move? Please enter (x, y) coordinates."
+    puts "(or 's' to save)"
     print "> "
-    position = gets.chomp.split(",").map {|coord| Integer(coord)}
-    puts "Do you want to reveal (R), or flag (F)?"
-    print "> "
-    move = gets.chomp.upcase
+    command = gets.chomp
+    if command.downcase.strip == 's'
+      save
+      return nil
+    else
+      position = command.split(",").map {|coord| Integer(coord)}
+      puts "Do you want to reveal (R), or flag (F)?"
+      print "> "
+      move = gets.chomp.upcase
+    end
 
     [position, move]
+  end
+
+  def save
+    File.write('./saves/saved_game.yaml', self.to_yaml)
+
   end
 
 end
 
 if __FILE__ == $PROGRAM_NAME
-  ms = Minesweeper.new
-  ms.play
+  load_file = ARGV.shift
+  if load_file
+    ms2 = YAML::load(File.read(load_file))
+    ms2.play
+  else
+
+    ms = Minesweeper.new
+
+    ms.play
+  end
 end
