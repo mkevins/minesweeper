@@ -1,15 +1,14 @@
-require_relative 'board'
-
 class Square
 
-  attr_accessor :value, :position, :flag, :revealed
+  attr_accessor :value, :position
+  attr_writer :flag, :revealed
   attr_reader :neighbors
 
   def initialize(position, options = {})
     defaults = {
       value: nil,
       flag: false,
-      revealed: true
+      revealed: false
     }
 
     options = defaults.merge(options)
@@ -20,8 +19,16 @@ class Square
     @neighbors = []
   end
 
+  def flag?
+    @flag
+  end
+
+  def revealed?
+    @revealed
+  end
+
   def inspect
-    puts "initialized!"
+    # puts "initialized!"
     # puts "position: #{@position}"
     # puts "value #{@value}"
     # puts "flag #{@flag}"
@@ -30,8 +37,8 @@ class Square
   end
 
   def display_square
-    if !self.revealed
-      print self.flag ? "F" : "*"
+    if !self.revealed?
+      print self.flag? ? "F" : "*"
     elsif self.value == 0
       print "_"
     elsif self.value == :bomb
@@ -40,5 +47,44 @@ class Square
       print self.value
     end
   end
+
+  def reveal
+    if self.revealed?
+      "Square already revealed."
+    elsif self.flag?
+      "Square has been flagged, cannot reveal."
+    elsif self.value == :bomb
+      self.revealed = true
+      "Kaboom!! You picked a bomb; you lose."
+    elsif self.value.between?(1, 8)
+      self.revealed = true
+      "Square revealed"
+    elsif self.value == 0
+      self.revealed = true
+
+      self.neighbors.each do |neighbor|
+        next if neighbor.revealed?
+        neighbor.reveal
+      end
+
+      "Squares revealed"
+    end
+
+  end
+
+  def set_flag
+    if self.revealed?
+      return "Square has already been revealed"
+    else
+      if self.flag?
+        self.flag = false
+        return "Flag has been removed."
+      else
+        self.flag = true
+        return "Square has been flagged."
+      end
+    end
+  end
+
 
 end

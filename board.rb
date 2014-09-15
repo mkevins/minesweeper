@@ -1,5 +1,4 @@
 require_relative 'square'
-require 'debugger'
 
 class Board
 
@@ -10,6 +9,7 @@ class Board
   ]
 
   attr_reader :dimensions
+  attr_writer :won, :over
 
   def initialize(dimensions = [9, 9])
     # debugger
@@ -21,6 +21,8 @@ class Board
     place_bombs(random_bomb_positions)
     set_neighbors
     set_values
+    @over = false
+    @won = false
 
   end
 
@@ -48,14 +50,13 @@ class Board
 
   def place_bombs(positions)
     positions.each do |position|
-      self[position].value = :bomb # to be defined as bomb #  = Square.new({ value: bomb })
+      self[position].value = :bomb
     end
 
     nil
   end
 
   def all_squares(&prc)
-
     (0...@dimensions[0]).each do |x|
       (0...@dimensions[1]).each do |y|
         prc.call([x, y])
@@ -96,9 +97,7 @@ class Board
       next if current_square.value == :bomb
 
       current_square.neighbors.each do |neighbor|
-        if neighbor.value == :bomb
-          count += 1
-        end
+        count += 1 if neighbor.value == :bomb
       end
 
       current_square.value = count
@@ -108,7 +107,11 @@ class Board
   end
 
   def render
+    puts "   0  1  2  3  4  5  6  7  8"
+
     (0...@dimensions[1]).each do |y|
+      print "#{y}  "
+
       (0...@dimensions[0]).each do |x|
 
         current_square = self[[x, y]]
@@ -118,6 +121,25 @@ class Board
       end
       print "\n"
     end
+  end
+
+  def hit_bomb?
+    @rows.flatten.select(&:revealed?).any? { |square| square.value == :bomb }
+  end
+
+  def over?
+    hit_bomb? || won?
+  end
+
+  def won?
+    total_squares = @dimensions[0] * @dimensions[1]
+    revealed_squares = @rows.flatten.select(&:revealed?).count
+
+    if @num_mines == total_squares - revealed_squares
+      return true
+    end
+
+    false
   end
 
 end
