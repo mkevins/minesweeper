@@ -90,20 +90,34 @@ class Board
     # debugger
 
     all_squares do |position|
-      value = 0
+      count = 0
       current_square = self[position]
-      p current_square
+      # p current_square
+      next if current_square.value == :bomb
 
       current_square.neighbors.each do |neighbor|
         if neighbor.value == :bomb
-          value += 1
+          count += 1
         end
       end
 
-      current_square.value = value
+      current_square.value = count
     end
 
     nil
+  end
+
+  def render
+    (0...@dimensions[1]).each do |y|
+      (0...@dimensions[0]).each do |x|
+
+        current_square = self[[x, y]]
+        current_square.display_square
+        print "  "
+
+      end
+      print "\n"
+    end
   end
 
 end

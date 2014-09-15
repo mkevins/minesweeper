@@ -9,7 +9,7 @@ class Square
     defaults = {
       value: nil,
       flag: false,
-      revealed: false
+      revealed: true
     }
 
     options = defaults.merge(options)
@@ -21,12 +21,24 @@ class Square
   end
 
   def inspect
-    puts "position: #{@position}"
-    puts "value #{@value}"
-    puts "flag #{@flag}"
-    puts "revealed #{@revealed}"
-    puts "neighbor length #{@neighbors.length}"
+    puts "initialized!"
+    # puts "position: #{@position}"
+    # puts "value #{@value}"
+    # puts "flag #{@flag}"
+    # puts "revealed #{@revealed}"
+    # puts "neighbor length #{@neighbors.length}"
   end
 
+  def display_square
+    if !self.revealed
+      print self.flag ? "F" : "*"
+    elsif self.value == 0
+      print "_"
+    elsif self.value == :bomb
+      print "B"
+    elsif self.value.between?(1, 8)
+      print self.value
+    end
+  end
 
 end
